@@ -33,8 +33,10 @@ vertshader::vertshader(char * vertfile){
 		glGetShaderInfoLog(_vertshader, GL_INFO_LOG_LENGTH, &logLen, log);
 		std::cerr << "vertshader log : " << std::endl;
 		std::cerr << log << std::endl;
+		free(log);
 	}
 	fclose(f);
+	delete[] fbuf;
 }
 
 vertshader::~vertshader(){
@@ -59,15 +61,17 @@ fragshader::fragshader(char * fragfile){
 	glCompileShader(_fragshader);
 	GLint cStatus = 0;
 	glGetShaderiv(_fragshader, GL_COMPILE_STATUS, &cStatus);
-	if (GL_FALSE == cStatus) {	
+	if (GL_FALSE == cStatus) {
 		GLint logLen;
 		glGetShaderiv(_fragshader, GL_INFO_LOG_LENGTH, &logLen);
 		char *log = (char *)malloc(logLen);
 		glGetShaderInfoLog(_fragshader, GL_INFO_LOG_LENGTH, &logLen, log);
 		std::cerr << "fragshader log : " << std::endl;
 		std::cerr << log << std::endl;
+		free(log);
 	}
 	fclose(f);
+	delete[] fbuf;
 }
 
 fragshader::~fragshader(){
@@ -102,6 +106,7 @@ void shader::make_current(GLuint _program){
 					glGetProgramInfoLog(_program, logLen, &written, log);
 					std::cerr << "program log : " << std::endl;
 					std::cerr << log << std::endl;
+					free(log);
 				}
 				glValidateProgram(_program);
 				GLint status;

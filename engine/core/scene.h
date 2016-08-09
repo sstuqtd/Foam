@@ -1,38 +1,60 @@
 /*
  * qianqians
  * 2016-7-29
- * event.h
+ * scene.h
  */
-#ifndef _event_h_
-#define _event_h_
+#ifndef _scene_h_
+#define _scene_h_
 
+#include <array>
+#include <vector>
+#include <unordered_map>
 #include <memory>
-#include <string>
-#include <queue>
-#include <mutex>
 
 namespace core{
 
-class engine_event{
+class body;
+class physical_body;
+class water;
+class particles;
+class actor;
+class terrain;
+
+class scene {
 public:
-	static std::shared_ptr<engine_event> create_engine_event();
-	static std::shared_ptr<engine_event> get_engine_event();
-
-private:
-    engine_event();
-    ~engine_event();
+	scene();
+    ~scene();
 
 public:
-	void push_event(std::string json_str);
-
-	bool pop_event(std::string & json_str);
+	void lookat(std::array<float, 3> postion, std::array<float, 3> up, std::array<float, 3> lookat);
 
 private:
-	std::mutex _mutext_event_que;
-	std::queue<std::string> _event_que;
+	struct {
+		std::array<float, 3> postion;
+		std::array<float, 3> up;
+		std::array<float, 3> lookat;
+	} camera;
+
+public:
+	void preprocess();
+
+	void draw();
 
 private:
-	static std::shared_ptr<engine_event> _engine_event;
+	std::shared_ptr<terrain> _terrain;
+
+	struct speeddial {
+		struct range {
+			std::unordered_map<std::string, std::shared_ptr<body> > bodys;
+			std::unordered_map<std::string, std::shared_ptr<physical_body> > physical_bodys;
+			std::unordered_map<std::string, std::shared_ptr<water> > waters;
+			std::unordered_map<std::string, std::shared_ptr<particles> > particless;
+			std::unordered_map<std::string, std::shared_ptr<actor> > actors;
+		};
+
+		std::vector<std::vector<range> > ranges;
+
+	} _speeddial;
 
 };
 
